@@ -39,7 +39,7 @@ module Devise
         @password = params[:password]
         @new_password = params[:new_password]
 
-        DeviseLdapAuthenticatable::Logger.send("LDAP Params: :login => #{params[:login}], password and :admin => #{params[:admin}]")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Params: :login => #{params[:login]}, password and :admin => #{params[:admin]}")
         DeviseLdapAuthenticatable::Logger.send("LDAP ldap_config => #{ldap_config}")
         DeviseLdapAuthenticatable::Logger.send("LDAP @ldap => #{@ldap}")
 
