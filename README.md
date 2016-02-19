@@ -1,0 +1,1 @@
+# devise_ldap_authenticatable
