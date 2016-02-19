@@ -95,6 +95,8 @@ module Devise
 
         DeviseLdapAuthenticatable::Logger.send("LDAP Do @ldap.bind")
         @ldap.bind
+        DeviseLdapAuthenticatable::Logger.send("LDAP Bind Result : #{ldap.get_operation_result.code}")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Bind Message: #{ldap.get_operation_result.message}")
       end
 
       def authenticated?
