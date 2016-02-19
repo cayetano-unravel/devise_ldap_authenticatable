@@ -11,7 +11,7 @@ module Devise
                    :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
                    :admin => ::Devise.ldap_use_admin_to_bind}
 
-        DeviseLdapAuthenticatable::Logger.send("LDAP Checking for valid credentials. Options: :login => #{login}, password and :admin => #{admin}")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Checking for valid credentials. Options: :login => #{login}, password and :admin => #{::Devise.ldap_use_admin_to_bind}")
 
         resource = Devise::LDAP::Connection.new(options)
 
