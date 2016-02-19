@@ -11,7 +11,12 @@ module Devise
                    :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
                    :admin => ::Devise.ldap_use_admin_to_bind}
 
+        DeviseLdapAuthenticatable::Logger.send("LDAP Checking for valid credentials. Options => #{options}")
+
         resource = Devise::LDAP::Connection.new(options)
+
+        DeviseLdapAuthenticatable::Logger.send("LDAP Resource obtained after Devise::LDAP::Connection.new(options) => #{resource}")
+
         resource.authorized?
       end
 
@@ -34,10 +39,15 @@ module Devise
                    :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
                    :admin => ::Devise.ldap_use_admin_to_bind}
 
+        DeviseLdapAuthenticatable::Logger.send("LDAP ldap_connect using options => #{options}")
+
         resource = Devise::LDAP::Connection.new(options)
+
+        DeviseLdapAuthenticatable::Logger.send("LDAP Resource obtained from Devise::LDAP::Connection.new(options) => #{resource}")
       end
 
       def self.valid_login?(login)
+        DeviseLdapAuthenticatable::Logger.send("LDAP Valid login?")
         self.ldap_connect(login).valid_login?
       end
 
@@ -50,6 +60,7 @@ module Devise
       end
 
       def self.get_dn(login)
+        DeviseLdapAuthenticatable::Logger.send("LDAP Get dn")
         self.ldap_connect(login).dn
       end
 
