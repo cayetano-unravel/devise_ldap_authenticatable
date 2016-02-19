@@ -91,7 +91,7 @@ module Devise
         # Find a user for ldap authentication.
         def find_for_ldap_authentication(attributes={})
 
-          DeviseLdapAuthenticatable::Logger.send("LDAP Find a user for ldap authentication")
+          DeviseLdapAuthenticatable::Logger.send("LDAP Find a user for ldap authentication.")
 
           auth_key = self.authentication_keys.first
           return nil unless attributes[auth_key].present?

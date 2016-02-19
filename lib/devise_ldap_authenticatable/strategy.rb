@@ -24,6 +24,7 @@ module Devise
             resource.after_ldap_authentication
             success!(resource)
           else
+            DeviseLdapAuthenticatable::Logger.send("LDAP Invalid credentials")
             return fail(:invalid) # Invalid credentials
           end
         end

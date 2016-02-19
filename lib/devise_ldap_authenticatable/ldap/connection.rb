@@ -39,7 +39,7 @@ module Devise
         @password = params[:password]
         @new_password = params[:new_password]
 
-        DeviseLdapAuthenticatable::Logger.send("LDAP Params => #{params}")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Params: :login => #{params[:login}], password and :admin => #{params[:admin}]")
         DeviseLdapAuthenticatable::Logger.send("LDAP ldap_config => #{ldap_config}")
         DeviseLdapAuthenticatable::Logger.send("LDAP @ldap => #{@ldap}")
 
@@ -87,13 +87,15 @@ module Devise
 
       def authenticate!
 
-        DeviseLdapAuthenticatable::Logger.send("LDAP Inside authenticate: @allow_unauthenticated_bind => #{@allow_unauthenticated_bind}")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Before authenticating, check @allow_unauthenticated_bind => #{@allow_unauthenticated_bind}")
         return false unless (@password.present? || @allow_unauthenticated_bind)
 
-        DeviseLdapAuthenticatable::Logger.send("LDAP Do @ldap.auth with dn => #{dn} and password")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Doing @ldap.auth with dn => #{dn} and password")
         @ldap.auth(dn, @password)
+        DeviseLdapAuthenticatable::Logger.send("LDAP Auth Result : #{ldap.get_operation_result.code}")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Auth Message: #{ldap.get_operation_result.message}")
 
-        DeviseLdapAuthenticatable::Logger.send("LDAP Do @ldap.bind")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Doing @ldap.bind")
         @ldap.bind
         DeviseLdapAuthenticatable::Logger.send("LDAP Bind Result : #{ldap.get_operation_result.code}")
         DeviseLdapAuthenticatable::Logger.send("LDAP Bind Message: #{ldap.get_operation_result.message}")
