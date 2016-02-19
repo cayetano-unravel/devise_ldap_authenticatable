@@ -57,7 +57,6 @@ module Devise
       def dn
         @dn ||= begin
           DeviseLdapAuthenticatable::Logger.send("LDAP dn lookup using attribute => #{@attribute} and login => #{@login}")
-          DeviseLdapAuthenticatable::Logger.send("#{@admin_enabled} ********************** ")
           if @admin_enabled
             ldap_entry = search_for_login
             if ldap_entry.nil?
