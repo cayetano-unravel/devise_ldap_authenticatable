@@ -26,6 +26,7 @@ module Devise
         @allow_unauthenticated_bind = ldap_config["allow_unauthenticated_bind"]
 
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]
+        @admin_enabled = params[:admin]
 
         @group_base = ldap_config["group_base"]
         @check_group_membership = ldap_config.has_key?("check_group_membership") ? ldap_config["check_group_membership"] : ::Devise.ldap_check_group_membership
@@ -56,8 +57,8 @@ module Devise
       def dn
         @dn ||= begin
           DeviseLdapAuthenticatable::Logger.send("LDAP dn lookup using attribute => #{@attribute} and login => #{@login}")
-          DeviseLdapAuthenticatable::Logger.send("#{param[:admin]} ********************** ")
-          if param[:admin]
+          DeviseLdapAuthenticatable::Logger.send("#{@admin_enabled} ********************** ")
+          if @admin_enabled
             ldap_entry = search_for_login
             if ldap_entry.nil?
               DeviseLdapAuthenticatable::Logger.send("LDAP After search_for_login, ldap_entry is null")
@@ -67,7 +68,7 @@ module Devise
               ldap_entry.dn
             end
           else
-            # param[:admin] is false
+            # @admin_enabled is false
             @ldap_auth_username_builder.call(@attribute,@login,@ldap)
           end
         end
