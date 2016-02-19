@@ -87,7 +87,7 @@ module Devise
 
       def authenticate!
 
-        DeviseLdapAuthenticatable::Logger.send("LDAP Inside authenticate: @password.present => #{@password.present}, @allow_unauthenticated_bind => #{@allow_unauthenticated_bind}")
+        DeviseLdapAuthenticatable::Logger.send("LDAP Inside authenticate: @allow_unauthenticated_bind => #{@allow_unauthenticated_bind}")
         return false unless (@password.present? || @allow_unauthenticated_bind)
 
         DeviseLdapAuthenticatable::Logger.send("LDAP Do @ldap.auth with dn => #{dn} and password")
