@@ -56,13 +56,19 @@ module Devise
       def dn
         @dn ||= begin
           DeviseLdapAuthenticatable::Logger.send("LDAP dn lookup using attribute => #{@attribute} and login => #{@login}")
-          ldap_entry = search_for_login
-          if ldap_entry.nil?
-            DeviseLdapAuthenticatable::Logger.send("LDAP After search_for_login, ldap_entry is null")
-            @ldap_auth_username_builder.call(@attribute,@login,@ldap)
+          DeviseLdapAuthenticatable::Logger.send("#{param[:admin]} ********************** ")
+          if param[:admin]
+            ldap_entry = search_for_login
+            if ldap_entry.nil?
+              DeviseLdapAuthenticatable::Logger.send("LDAP After search_for_login, ldap_entry is null")
+              @ldap_auth_username_builder.call(@attribute,@login,@ldap)
+            else
+              DeviseLdapAuthenticatable::Logger.send("LDAP After search_for_login, ldap_entry is not null")
+              ldap_entry.dn
+            end
           else
-            DeviseLdapAuthenticatable::Logger.send("LDAP After search_for_login, ldap_entry is not null")
-            ldap_entry.dn
+            # param[:admin] is false
+            @ldap_auth_username_builder.call(@attribute,@login,@ldap)
           end
         end
       end
