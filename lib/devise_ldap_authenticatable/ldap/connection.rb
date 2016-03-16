@@ -4,16 +4,11 @@ module Devise
       attr_reader :ldap, :login
 
       def initialize(params = {})
-
-        DeviseLdapAuthenticatable::Logger.send("LDAP Initializing connection")
-
         if ::Devise.ldap_config.is_a?(Proc)
           ldap_config = ::Devise.ldap_config.call
         else
-          DeviseLdapAuthenticatable::Logger.send("LDAP Reading config from => #{::Devise.ldap_config}")
           ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)[Rails.env]
         end
-
         ldap_options = params
         ldap_config["ssl"] = :simple_tls if ldap_config["ssl"] === true
         ldap_options[:encryption] = ldap_config["ssl"].to_sym if ldap_config["ssl"]
@@ -26,7 +21,6 @@ module Devise
         @allow_unauthenticated_bind = ldap_config["allow_unauthenticated_bind"]
 
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]
-        @admin_enabled = params[:admin]
 
         @group_base = ldap_config["group_base"]
         @check_group_membership = ldap_config.has_key?("check_group_membership") ? ldap_config["check_group_membership"] : ::Devise.ldap_check_group_membership
@@ -39,11 +33,6 @@ module Devise
         @login = params[:login]
         @password = params[:password]
         @new_password = params[:new_password]
-
-        DeviseLdapAuthenticatable::Logger.send("LDAP Params: :login => #{params[:login]}, password and :admin => #{params[:admin]}")
-        DeviseLdapAuthenticatable::Logger.send("LDAP ldap_config => #{ldap_config}")
-        DeviseLdapAuthenticatable::Logger.send("LDAP @ldap => #{@ldap}")
-
       end
 
       def delete_param(param)
@@ -56,19 +45,12 @@ module Devise
 
       def dn
         @dn ||= begin
-          DeviseLdapAuthenticatable::Logger.send("LDAP dn lookup using attribute => #{@attribute} and login => #{@login}")
-          if @admin_enabled
-            ldap_entry = search_for_login
-            if ldap_entry.nil?
-              DeviseLdapAuthenticatable::Logger.send("LDAP After search_for_login, ldap_entry is null")
-              @ldap_auth_username_builder.call(@attribute,@login,@ldap)
-            else
-              DeviseLdapAuthenticatable::Logger.send("LDAP After search_for_login, ldap_entry is not null")
-              ldap_entry.dn
-            end
-          else
-            # @admin_enabled is false
+          DeviseLdapAuthenticatable::Logger.send("LDAP dn lookup: #{@attribute}=#{@login}")
+          ldap_entry = search_for_login
+          if ldap_entry.nil?
             @ldap_auth_username_builder.call(@attribute,@login,@ldap)
+          else
+            ldap_entry.dn
           end
         end
       end
@@ -92,23 +74,12 @@ module Devise
       end
 
       def authenticate!
-
-        DeviseLdapAuthenticatable::Logger.send("LDAP Before authenticating, check @allow_unauthenticated_bind => #{@allow_unauthenticated_bind}")
         return false unless (@password.present? || @allow_unauthenticated_bind)
-
-        DeviseLdapAuthenticatable::Logger.send("LDAP Doing @ldap.auth with dn => #{dn} and password")
         @ldap.auth(dn, @password)
-        DeviseLdapAuthenticatable::Logger.send("LDAP Auth Result : #{ldap.get_operation_result.code}")
-        DeviseLdapAuthenticatable::Logger.send("LDAP Auth Message: #{ldap.get_operation_result.message}")
-
-        DeviseLdapAuthenticatable::Logger.send("LDAP Doing @ldap.bind")
         @ldap.bind
-        DeviseLdapAuthenticatable::Logger.send("LDAP Bind Result : #{ldap.get_operation_result.code}")
-        DeviseLdapAuthenticatable::Logger.send("LDAP Bind Message: #{ldap.get_operation_result.message}")
       end
 
       def authenticated?
-        DeviseLdapAuthenticatable::Logger.send("LDAP Are we authenticated?")
         authenticate!
       end
 
@@ -204,8 +175,6 @@ module Devise
       end
 
       def valid_login?
-
-        DeviseLdapAuthenticatable::Logger.send("Logged in? Do Search")
         !search_for_login.nil?
       end
 
@@ -214,14 +183,12 @@ module Devise
       # @return [Object] the LDAP entry found; nil if not found
       def search_for_login
         @login_ldap_entry ||= begin
-          DeviseLdapAuthenticatable::Logger.send("LDAP search for login using attribute => #{@attribute} and login => #{@login}")
+          DeviseLdapAuthenticatable::Logger.send("LDAP search for login: #{@attribute}=#{@login}")
           filter = Net::LDAP::Filter.eq(@attribute.to_s, @login.to_s)
           ldap_entry = nil
           match_count = 0
           @ldap.search(:filter => filter) {|entry| ldap_entry = entry; match_count+=1}
           DeviseLdapAuthenticatable::Logger.send("LDAP search yielded #{match_count} matches")
-
-          DeviseLdapAuthenticatable::Logger.send("LDAP ldap_entry obtained => #{ldap_entry}")
           ldap_entry
         end
       end
@@ -232,7 +199,7 @@ module Devise
         ldap = Connection.new(:admin => true).ldap
 
         unless ldap.bind
-          DeviseLdapAuthenticatable::Logger.send("LDAP Cannot bind to admin LDAP user")
+          DeviseLdapAuthenticatable::Logger.send("Cannot bind to admin LDAP user")
           raise DeviseLdapAuthenticatable::LdapException, "Cannot connect to admin LDAP user"
         end
 
@@ -240,7 +207,7 @@ module Devise
       end
 
       def find_ldap_user(ldap)
-        DeviseLdapAuthenticatable::Logger.send("LDAP Finding user: #{dn}")
+        DeviseLdapAuthenticatable::Logger.send("Finding user: #{dn}")
         ldap.search(:base => dn, :scope => Net::LDAP::SearchScope_BaseObject).try(:first)
       end
 

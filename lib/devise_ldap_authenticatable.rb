@@ -6,6 +6,12 @@ require 'devise_ldap_authenticatable/logger'
 require 'devise_ldap_authenticatable/ldap/adapter'
 require 'devise_ldap_authenticatable/ldap/connection'
 
+# Ldapter
+if ENV['LDAPTER_CLASSPATH']
+  $CLASSPATH << ENV['LDAPTER_CLASSPATH']
+end
+require 'devise_ldap_authenticatable/ldap/ldapter'
+
 # Get ldap information from config/ldap.yml now
 module Devise
   # Allow logging
@@ -38,6 +44,9 @@ module Devise
 
   mattr_accessor :ldap_ad_group_check
   @@ldap_ad_group_check = false
+
+  mattr_accessor :ldap_ldapter
+  @@ldap_ldapter = false
 end
 
 # Add ldap_authenticatable strategy to defaults.

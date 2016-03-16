@@ -1,3 +1,5 @@
+require 'bundler/gem_tasks'
+
 require File.expand_path('spec/rails_app/config/environment', File.dirname(__FILE__))
 require 'rdoc/task'
 

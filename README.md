@@ -72,6 +72,8 @@ Configuration
 -------------
 In initializer  `config/initializers/devise.rb` :
 
+* `ldap_ldapter` _(default: false)_
+  * If set to true, will use Devise::LDAP::Ldapter instead of Devise::LDAP::Adapter to validate an authentication.
 * `ldap_logger` _(default: true)_
   * If set to true, will log LDAP queries to the Rails logger.
 * `ldap_create_user` _(default: false)_

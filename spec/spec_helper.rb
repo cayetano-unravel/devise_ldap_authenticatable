@@ -44,6 +44,7 @@ def reset_ldap_server!
 end
 
 def default_devise_settings!
+  ::Devise.ldap_ldapter = false
   ::Devise.ldap_logger = true
   ::Devise.ldap_create_user = false
   ::Devise.ldap_update_password = true

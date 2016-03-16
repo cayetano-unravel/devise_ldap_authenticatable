@@ -45,6 +45,8 @@ describe 'Users' do
       end
 
       it "should change password" do
+        skip "Devise.ldap_auth_password_builder is not implemented in devise_ldap_authenticatable 0.8.6"
+        
         should_be_validated @user, "secret"
         @user.password = "changed"
         @user.change_password!("secret")
@@ -172,13 +174,14 @@ describe 'Users' do
 
     describe "check group membership w/out admin bind" do
       before do
-        @user = Factory.create(:user)
-        ::Devise.ldap_check_group_membership_without_admin = true
+        skip "Devise.ldap_check_group_membership_without_admin is not implemented in devise_ldap_authenticatable 0.8.6"
+      #  @user = Factory.create(:user)
+      #  ::Devise.ldap_check_group_membership_without_admin = true
       end
 
-      after do
-        ::Devise.ldap_check_group_membership_without_admin = false
-      end
+      #after do
+      #  ::Devise.ldap_check_group_membership_without_admin = false
+      #end
 
       it "should return true for user being in the users group" do
         assert_equal true, @user.in_ldap_group?('cn=users,ou=groups,dc=test,dc=com')

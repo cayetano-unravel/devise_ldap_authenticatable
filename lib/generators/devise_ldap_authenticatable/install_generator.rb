@@ -29,6 +29,7 @@ module DeviseLdapAuthenticatable
     def default_devise_settings
       settings = <<-eof
   # ==> LDAP Configuration 
+  # config.ldap_ldapter = false
   # config.ldap_logger = true
   # config.ldap_create_user = false
   # config.ldap_update_password = true

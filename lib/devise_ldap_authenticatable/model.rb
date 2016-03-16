@@ -45,12 +45,14 @@ module Devise
 
       # Checks if a resource is valid upon authentication.
       def valid_ldap_authentication?(password)
-        DeviseLdapAuthenticatable::Logger.send("LDAP Checking if the resource is valid upon authentication. Using: login_with => #{login_with} and password")
-        Devise::LDAP::Adapter.valid_credentials?(login_with, password)
+        if Devise.ldap_ldapter
+          Devise::LDAP::Ldapter.valid_credentials?(login_with, password)
+        else
+          Devise::LDAP::Adapter.valid_credentials?(login_with, password)
+        end
       end
 
       def ldap_entry
-        DeviseLdapAuthenticatable::Logger.send("LDAP Obtaining ldap_entry of login_with => #{login_with}")
         @ldap_entry ||= Devise::LDAP::Adapter.get_ldap_entry(login_with)
       end
 
@@ -90,9 +92,6 @@ module Devise
       module ClassMethods
         # Find a user for ldap authentication.
         def find_for_ldap_authentication(attributes={})
-
-          DeviseLdapAuthenticatable::Logger.send("LDAP Find a user for ldap authentication.")
-
           auth_key = self.authentication_keys.first
           return nil unless attributes[auth_key].present?
 

@@ -10,21 +10,16 @@ module Devise
       # indicating whether the resource is not found in the database or the credentials
       # are invalid.
       def authenticate!
-
-        DeviseLdapAuthenticatable::Logger.send("LDAP Authentication Starts")
-
         resource = mapping.to.find_for_ldap_authentication(authentication_hash.merge(password: password))
 
         return fail(:invalid) unless resource
 
         if resource.persisted?
           if validate(resource) { resource.valid_ldap_authentication?(password) }
-            DeviseLdapAuthenticatable::Logger.send("LDAP Valid credentials")
             remember_me(resource)
             resource.after_ldap_authentication
             success!(resource)
           else
-            DeviseLdapAuthenticatable::Logger.send("LDAP Invalid credentials")
             return fail(:invalid) # Invalid credentials
           end
         end
